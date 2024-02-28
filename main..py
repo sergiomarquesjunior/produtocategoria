@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, relationship
-from sqlalchemy import Column, Uuid, uuid, String, DateTime, func, DECIMAL, INTEGER, Boolean, ForeignKey,
+from sqlalchemy import Column, Uuid, uuid, String, DateTime, func, DECIMAL, INTEGER, Boolean, ForeignKey
 
 
 
@@ -9,7 +9,7 @@ motor = create_engine("sqlite+pysqlite://banco_de_dados.sqlite", echo=True)
 
 
 
-class base(DeclarativeBase):
+class Base(DeclarativeBase):
     pass
 
 
@@ -43,7 +43,7 @@ class Produto(Base, DatasMixin):
                 default=uuid.uuid4)
     nome = Column(String(256),
                   nullable=False)
-    preco = Column(DECIMAL(precision: 10, scale:2),
+    preco = Column(DECIMAL(10, 2),
             default=0.00)
     estoque = Column(INTEGER,
                      default=0)
