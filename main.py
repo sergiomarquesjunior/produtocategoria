@@ -1,11 +1,14 @@
-from sqlalchemy import create_engine
-from sqlalchemy.orm import DeclarativeBase, relationship
-from sqlalchemy import Column, Uuid, uuid, String, DateTime, func, DECIMAL, INTEGER, Boolean, ForeignKey
+import uuid
+
+
+from sqlalchemy import create_engine, select
+from sqlalchemy.orm import DeclarativeBase, relationship, Session
+from sqlalchemy import Column, Uuid, String, DateTime, func, DECIMAL, INTEGER, Boolean, ForeignKey
 
 
 
 
-motor = create_engine("sqlite+pysqlite://banco_de_dados.sqlite", echo=True)
+motor = create_engine("sqlite+pysqlite:///banco_de_dados.sqlite", echo=True)
 
 
 
@@ -54,3 +57,23 @@ class Produto(Base, DatasMixin):
 
     categoria = relationship("Categoria",
                              back_populates="listas_de_produtos")
+
+cat = Categoria()
+cat.nome = "Bebidas"
+
+prod = Produto()
+prod.nome = "Coca cola zero, 2L"
+prod.ativo = True
+prod.preco = 9.50
+prod.estoque = 100
+prod.categoria = cat
+
+with Session(motor) as sessao:
+    sessao.add(prod)
+    sessao.commit()
+
+with Session(motor) as sessao:
+   lista_de_categorias = sessao.execute(select(Categoria).where(Categoria.nome == "Bebidas")).scalars()
+   for categoria in lista_de_categorias:
+       print(f"A categoria {categoria.nome} tem {len(categoria.listas_de_produtos)} produtos")
+
