@@ -81,7 +81,7 @@ def seed_database():
 
 def incluir_categoria():
     print("Incluindo categoria")
-    nome = input("Qual o nome da categoria que você que adicionar? ")
+    nome = input("Qual o nome da categoria que você que adicionar?")
 
 if __name__ == "__main__":
     seed_database()
