@@ -54,26 +54,39 @@ class Produto(Base, DatasMixin):
                    default=True)
     categoria_id = Column(Uuid(as_uuid=True),
                           ForeignKey("tbl_categorias.id"))
-
+    # propriedades de navegação
     categoria = relationship("Categoria",
                              back_populates="listas_de_produtos")
 
-cat = Categoria()
-cat.nome = "Bebidas"
+def seed_database():
+    # iterar sobre as categorias e adicionar os produtos
+   with Session(motor) as sessao:
+       registro = sessao.execute(select(Categoria).limit(1)).scalar_one_or_none()
+       if registro:
+           return
+       from seed import seed_data
+       for categoria in seed_data:
+            cat = Categoria()
+            print(f"Semeando a categoria {categoria['categoria']}...")
+            cat.nome = categoria["categoria"]
+            for produto in categoria["produtos"]:
+                p = Produto()
+                p.nome = produto["nome"]
+                p.preco = produto["preco"]
+                p.estoque = 0
+                p.ativo = True
+                p.categoria = cat
+                sessao.add(p)
+            sessao.commit()
 
-prod = Produto()
-prod.nome = "Coca cola zero, 2L"
-prod.ativo = True
-prod.preco = 9.50
-prod.estoque = 100
-prod.categoria = cat
+def incluir_categoria():
+    print("Incluindo categoria")
+    nome = input("Qual o nome da categoria que você que adicionar? ")
 
-with Session(motor) as sessao:
-    sessao.add(prod)
-    sessao.commit()
+if __name__ == "__main__":
+    seed_database()
 
-with Session(motor) as sessao:
-   lista_de_categorias = sessao.execute(select(Categoria).where(Categoria.nome == "Bebidas")).scalars()
-   for categoria in lista_de_categorias:
-       print(f"A categoria {categoria.nome} tem {len(categoria.listas_de_produtos)} produtos")
+
+
+
 
